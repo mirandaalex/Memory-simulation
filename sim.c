@@ -130,7 +130,7 @@ int funDinamica(void){
 					}
 					break;
 				case 2:
-					printf("Ingresa el proceso que deseas matar\n");
+					printf("Ingresa el id del proceso que deseas matar\n");
 					scanf("%d",&auxi);
 					if (auxi>=0 && auxi<=particiones ){
 						part[auxi]!=false? part[auxi]=false:printf("El proceso no se encuentra ocupado\n");;
@@ -162,6 +162,143 @@ int funDinamica(void){
 	printf("Error al reservar memoria\n");
 	return 0;
 }
+void verProcPag( int **proc,int procesos, float **esp,int espera,float memoria){
+	printf("\nProcesos en ejecucion\tmemoria restante: %.2f\n",memoria);
+	for (int i = 0; i < procesos; ++i){
+		if(proc[0][i]>0)printf("Proceso id: %d\t Paginas usadas: %d\n",i, proc[0][i]);
+	}
+	printf("\nProcesos en espera\n");
+	for (int i = 0; i < espera; ++i){
+		if(esp[0][i]>0)printf("Proceso id: %d\t Memoria requerida: %.2f Mb\n",i,esp[0][i]);
+	}
+	printf("\n-----------------------------------------------------------------\n\n");		
+	printf("Precione enter para continuar\n");
+	getchar();
+	getchar();
+}
+
+int funPaginacion(void){
+	int memoria=1;
+	int pagina=0, numpag,pagUsadas=0,pagEspera=0,procesos=0;
+	printf("Ingrese la memoria deseada en Mb\n");
+	scanf("%d",&memoria);
+	printf("Ingrese el tama%co de las paginas en kb\n",164);
+	scanf("%d",&pagina);
+	numpag=(memoria*1024)/pagina;
+	printf("\nMemoria %d Mb paginas %d\n",memoria,numpag);
+	int *part;
+	float *espera;
+	espera = (float *)calloc(1,sizeof(float));
+	part = (int *)calloc(1,sizeof(int));
+	if (part!=NULL && espera!=NULL){
+		int aux, op,auxi;
+		float esp, auxf;
+		while(1){
+			printf("\n-----------------------------------------------------------------\n\n");
+			printf("\tParticion Dinamica\n");
+			printf("\t1 Agreagar proceso\n");
+			printf("\t2 Eliminar proceso\n");
+			printf("\t3 Ver procesos\n");
+			printf("\t4 Salir al menu\n");
+			printf("\n-----------------------------------------------------------------\n\n");
+			printf("ingresa la opcion\n");
+			scanf("%d",&op);
+			switch(op){
+				case 1:
+					printf("Ingresa el espacio ocupado del proceso en Mb\n");
+					scanf("%f",&esp);
+					aux=(esp*1024)/pagina;
+					if((numpag-pagUsadas)>=aux){
+						printf("\n**********Proceso en ejecucion********************\n");
+						if(pagUsadas==0){
+							part[0]=aux;
+							pagUsadas+=aux;
+							++procesos;
+							verProcPag(&part,procesos,&espera,pagEspera,(float)((numpag-pagUsadas)*pagina)/1024);
+						}else{
+							part=(int *)realloc(part,sizeof(int)*(procesos+1));
+							if (part!=NULL){
+								part[procesos]=aux;
+								pagUsadas+=aux;
+								++procesos;	
+								verProcPag(&part,procesos,&espera,pagEspera,(float)((numpag-pagUsadas)*pagina)/1024);
+							}else{
+								printf("Error en malloc\n");
+								return 0;
+							}
+						}
+					}else{
+						if(numpag>=aux){
+							printf("Se almacenara proceso en espera\n");
+							if(pagEspera==0){
+								espera[0]=esp;
+								++pagEspera;
+								verProcPag(&part,procesos,&espera,pagEspera,(float)((numpag-pagUsadas)*pagina)/1024);
+							}else{
+								espera=(float *)realloc(espera,sizeof(float)*(pagEspera+1));
+								if (espera!=NULL){
+									espera[pagEspera]=esp;
+									++pagEspera;
+									verProcPag(&part,procesos,&espera,pagEspera,(float)((numpag-pagUsadas)*pagina)/1024);
+								}else {
+									printf("error en malloc\n");
+									return 0;
+								}
+							}
+						}else printf("Proceso demaciado grande, no hay memoria total suficiente\n");
+					}
+					break;
+				case 2:
+					if (procesos>0){
+							printf("Ingresa el id del proceso que deseas matar\n");
+							scanf("%d",&auxi);
+							if (auxi>=0 && auxi<procesos ){
+								if(part[auxi]>0){
+									pagUsadas-=part[auxi];
+									part[auxi]=0;
+									for (int c = 0; c < pagEspera; ++c){
+										if (espera[c]>0 && (espera[c]/pagina)<=(numpag-pagUsadas)){
+											printf("Proceso en espera se ejecutara\n");
+											part=(int *)realloc(part,sizeof(int)*(procesos+1));
+											if (part!=NULL){
+												auxf=(espera[c]*1024)/pagina;
+												part[procesos]=(int)auxf;
+												pagUsadas+=part[procesos];
+												espera[c]=0;
+												++procesos;	
+											}else{
+												printf("Error en malloc\n");
+												return 0;
+											}
+
+										}
+									}
+								}else{
+									printf("El proceso no existe\n");
+								}
+							}else printf("No existe el proceso: %d\n",auxi);
+							verProcPag(&part,procesos,&espera,pagEspera,(float)((numpag-pagUsadas)*pagina)/1024);
+						}else printf("No hay procesos\n");
+					break;
+				case 3:
+					verProcPag(&part,procesos,&espera,pagEspera,(float)((numpag-pagUsadas)*pagina)/1024);
+					break;
+				case 4:
+					free(part);
+					free(espera);
+					return 1;
+				default:
+					printf("\nOpcion no valida\n");
+					printf("Precione enter para continuar\n");
+					getchar();
+					getchar();
+
+			}	
+		}
+	}
+	printf("Error al reservar memoria\n");
+	return 0;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -188,6 +325,7 @@ int main(int argc, char const *argv[])
 				funDinamica();
 				break;
 			case 3:
+				funPaginacion();
 				break;
 			case 4:
 				break;
