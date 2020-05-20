@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 int funEstatica(void){
@@ -300,6 +301,71 @@ int funPaginacion(void){
 	return 0;
 }
 
+int funSegementacion(){
+	float memoria=1;
+	int segmentos=0,we=0;
+	int segact=0;
+	bool flagg=false;
+	float tama,aux,res=0,temp=0,resant;
+	printf("Ingrese la memoria deseada en Mb\n");
+	scanf("%f",&memoria);
+	printf("Ingrese los segmentos deseadas\n");
+	scanf("%d",&segmentos);
+	tama=(float)memoria/segmentos;
+	printf("\nMemoria: %.2f Mb segmentos: %d de tamano %.2f Mb\n",memoria,segmentos ,tama);
+	while(1){
+		printf("\nIngresa el tamano del proceso en Mb ---- Tamano Disponible %.2f Mb\n",memoria);
+		scanf("%f",&aux);
+		if (aux>0 && aux<=memoria){
+			printf("Proceso de %.2f Mb\nEn los segmentos: \n",aux);
+			int cont=0;
+			flagg=false;
+			temp=aux*(-1);
+			while(temp<0){
+				if (cont==0 && res>0){
+					temp=temp+res;
+					flagg=true;
+					resant=res;
+				}else{
+					temp=temp+tama;
+				}
+				++cont;
+			}
+			res=temp;
+			if (flagg==true){
+				--cont;
+			}
+			segact+=cont;
+			for (int i = segact-cont-we; i < segact; ++i){
+				printf("\t  %d \n",i);
+				if (we==1 && i == (segact-cont-we)){
+					printf("\t[_ _] %.2f Mb\n",resant);
+				}else if(i==segact-1 && res >0){
+					printf("\t[_ _] %.2f Mb\n",tama-res);
+				}else{
+					printf("\t[_ _] %.2f Mb\n",tama);
+				}
+			}
+			if(res>0){ 
+				we=1;
+			}else we=0;
+			memoria-=aux;
+		}else {
+			printf("Error en el tamano del proceso, memoria insuficiente\n");
+			return 1;
+		}if (memoria==0){
+			printf("\n*******************************Run out of memory*****************************\n");
+			printf("Press enter to continue\n");
+			getchar();
+			getchar();
+			return 0;
+		}
+	printf("\n");
+	}
+
+}
+
+
 int main(int argc, char const *argv[])
 {
 	int op;
@@ -310,9 +376,8 @@ int main(int argc, char const *argv[])
 		printf("\t2 Particion Dinamica\n");
 		printf("\t3 Paginacion\n");
 		printf("\t4 Segmentacion\n");
-		printf("\t5 Paginacion segmentada\n");
-		printf("\t6 Segmentacion paginada\n");
-		printf("\t7 Salir\n");
+		printf("\t5 Segmentacion paginada\n");
+		printf("\t6 Salir\n");
 		printf("\n-----------------------------------------------------------------\n\n");
 		
 		printf("ingresa la opcion\n");
@@ -328,12 +393,11 @@ int main(int argc, char const *argv[])
 				funPaginacion();
 				break;
 			case 4:
+				funSegementacion();
 				break;
 			case 5:
 				break;
 			case 6:
-				break;
-			case 7:
 				return 0;
 			default:
 				printf("\nOpcion no valida\n");
