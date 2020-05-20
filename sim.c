@@ -3,31 +3,32 @@
 int funEstatica(void){
 	int memoria=1;
 	int particiones=0;
-	printf("ingrese la memoria deseada\n");
+	printf("Ingrese la memoria deseada en Mb\n");
 	scanf("%d",&memoria);
-	printf("ingrese las particiones\n");
+	printf("Ingrese las particiones deseadas\n");
 	scanf("%d",&particiones);
-	printf("memoria %d particiones %d\n",memoria,particiones );
+	printf("\nMemoria %d Mb particiones %d\n",memoria,particiones );
 	for (int i = 0; i < particiones; ++i)
 	{
-		printf("paricion %d: %.2f Mb\n",i, (float)memoria/particiones);
+		printf("Paricion %d: %.2f Mb\n",i, (float)memoria/particiones);
 	}
 	float *part;
 	part = (float *)calloc(particiones,sizeof(float));
 	if (part!=NULL){
 		float esp;
 		int espacio,temp;
+		printf("\n");
 		for (espacio = 0; ; ++espacio){
 			if (espacio < particiones){
 				temp=0;
 				while(temp==0){
-					printf("ingresa el espacio del proceso %d\n",espacio);
+					printf("Ingresa el espacio ocupado del proceso %d en Mb\n",espacio);
 					scanf("%f",&esp);
-					if (esp<=(float)memoria/particiones){
+					if (esp<=(float)memoria/particiones && esp>0){
 						part[espacio]= esp;	
 						temp=1;
 					}else{
-						printf("proceso demaciado grande\n");
+						printf("\nProceso demaciado grande o tiene un valor invalido\n");
 					}
 				}
 			}else{
@@ -37,9 +38,10 @@ int funEstatica(void){
 				printf("\n-----------------------------------------------------------------\n\n");
 				printf("Lista de procesos\n\n");
 				for (espacio = 0;espacio < particiones ; ++espacio){
-					printf("Proceso: %d\n espacio total: %f\t espacio utilizado: %f\n",espacio,(float)memoria/particiones,part[espacio]);
+					printf("Proceso: %d\n espacio total: %.2f\t espacio utilizado: %.2f\n",espacio,(float)memoria/particiones,part[espacio]);
 				}
 				printf("\n-----------------------------------------------------------------\n\n");		
+				printf("Precione enter para continuar\n");
 				free(part);
 				getchar();
 				getchar();
@@ -47,6 +49,14 @@ int funEstatica(void){
 			}	
 		}
 	}
+	return 0;
+}
+
+
+int funDinamica(void){
+
+
+
 	return 0;
 }
 
@@ -67,12 +77,30 @@ int main(int argc, char const *argv[])
 		
 		printf("ingresa la opcion\n");
 		scanf("%d",&op);
-		if (op==7){
-			break;
-		}if(op==1){
-			funEstatica();
+		switch(op){
+			case 1:
+				funEstatica();
+				break;
+			case 2:
+				funDinamica();
+				break;
+			case 3:
+				break;
+			case 4:
+				break;
+			case 5:
+				break;
+			case 6:
+				break;
+			case 7:
+				return 0;
+			default:
+				printf("\nOpcion no valida\n");
+				printf("Precione enter para continuar\n");
+				getchar();
+				getchar();
+
 		}
 	}
-	//funEstatica();
 	return 0;
 }
