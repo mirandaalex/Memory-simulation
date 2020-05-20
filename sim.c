@@ -366,6 +366,85 @@ int funSegementacion(){
 }
 
 
+
+int funSegementacionPag(){
+	float memoria=1;
+	int segmentos=0,we=0;
+	int segact=0;
+	int paginas,paginasSeg=0;
+	bool flagg=false;
+	float tama,aux,res=0,temp=0,resant,aux3;
+	printf("Ingrese la memoria deseada en Mb\n");
+	scanf("%f",&memoria);
+	printf("Ingrese los segmentos deseadas\n");
+	scanf("%d",&segmentos);
+	printf("Ingrese el tamano de las paginas en kb\n");
+	scanf("%d",&paginas);
+	tama=(float)memoria/segmentos;
+	aux=tama*1024;
+	while (aux>0){
+		aux=aux-paginas;
+		paginasSeg++;	
+	}
+	if (aux<0){
+		paginasSeg--;
+	}
+	printf("\nMemoria: %.2f Mb segmentos: %d de tamano %.2f Mb \nCon %d paginas de tamano: %d kb\n",memoria,segmentos ,tama,paginasSeg*segmentos,paginas);
+	while(1){
+		printf("\nIngresa el tamano del proceso en Mb ---- Tamano Disponible %.2f Mb\n",memoria);
+		scanf("%f",&aux);
+		if (aux>0 && aux<=memoria){
+			printf("Proceso de %.2f Mb\nEn los segmentos: \n",aux);
+			int cont=0;
+			flagg=false;
+			temp=aux*(-1);
+			while(temp<0){
+				if (cont==0 && res>0){
+					temp=temp+res;
+					flagg=true;
+					resant=res;
+				}else{
+					temp=temp+tama;
+				}
+				++cont;
+			}
+			res=temp;
+			if (flagg==true){
+				--cont;
+			}
+			segact+=cont;
+			for (int i = segact-cont-we; i < segact; ++i){
+				printf("\t  %d \n",i);
+				if (we==1 && i == (segact-cont-we)){
+					
+					printf("\t[_ _] %.2f Mb, %d paginas\n",resant,(int)(resant*1024)/paginas);
+				}else if(i==segact-1 && res >0){
+					printf("\t[_ _] %.2f Mb, %d paginas\n",tama-res,(int)((tama-res)*1024)/paginas);
+				}else{
+					printf("\t[_ _] %.2f Mb, %d paginas\n",tama,paginasSeg);
+				}
+			}
+			if(res>0){ 
+				we=1;
+			}else we=0;
+			memoria-=aux;
+		}else {
+			printf("Error en el tamano del proceso, memoria insuficiente\n");
+			return 1;
+		}if (memoria==0){
+			printf("\n*******************************Run out of memory*****************************\n");
+			printf("Press enter to continue\n");
+			getchar();
+			getchar();
+			return 0;
+		}
+	printf("\n");
+	}
+
+}
+
+
+
 int main(int argc, char const *argv[])
 {
 	int op;
@@ -396,6 +475,7 @@ int main(int argc, char const *argv[])
 				funSegementacion();
 				break;
 			case 5:
+				funSegementacionPag();
 				break;
 			case 6:
 				return 0;
