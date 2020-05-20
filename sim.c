@@ -90,7 +90,8 @@ int funDinamica(void){
 			printf("\t1 Agreagar proceso\n");
 			printf("\t2 Eliminar proceso\n");
 			printf("\t3 Ver memoria\n");
-			printf("\t4 Salir al menu\n");
+			printf("\t4 Ver procesos\n");
+			printf("\t5 Salir al menu\n");
 			printf("\n-----------------------------------------------------------------\n\n");
 			printf("ingresa la opcion\n");
 			scanf("%d",&op);
@@ -140,6 +141,11 @@ int funDinamica(void){
 					imprimeDinamica(&memo,&part,particiones);
 					break;
 				case 4:
+					for (int b = 0; b <=particiones; ++b){
+						if(part[b]==true){printf("Proceso id: %i\t%.2f Mb\n",b,memo[b]);}
+					}
+					break;
+				case 5:
 					free(part);
 					free(memo);
 					return 1;
